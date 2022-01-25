@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,6 +9,9 @@ namespace FormsMapController
 {
     public partial class FormsMap : UserControl
     {
+        private const float ZoomIncrement = 0.1f;
+        private const float ZoomMin = 0.1f;
+        private const float ZoomMax = 5;
         private readonly List<MapMarker> mapMarkers = new List<MapMarker>();
         private Point startLocation = Point.Empty;
         private Point pan = Point.Empty;
@@ -16,10 +20,13 @@ namespace FormsMapController
         private Image mapImage;
         private Point recentClick;
         private MapMarker draggedMarker = null;
+        private Point cursorPosition;
 
         public FormsMap()
         {
             InitializeComponent();
+
+            pictureBoxMap.MouseWheel += OnMouseWheel;
         }
 
         [Browsable(true)]
@@ -35,6 +42,7 @@ namespace FormsMapController
             get => zoomFactor;
             set
             {
+                float zoomDelta = zoomFactor - value;
                 bool changed = zoomFactor != value;
 
                 zoomFactor = value;
@@ -79,6 +87,16 @@ namespace FormsMapController
 
         public new void Refresh() => pictureBoxMap.Invalidate();
 
+        public static Point ConvertRelativePixelToMapUnits(Point relativePixelLocation, Point pan, float zoomFactor)
+        {
+            return new Point((int)((pan.X + relativePixelLocation.X) / zoomFactor), (int)((pan.Y + relativePixelLocation.Y) / zoomFactor));
+        }
+
+        public static Point ConvertMapUnitsToAbsolutePixel(Point mapLocation, float zoomFactor)
+        {
+            return new Point((int)(mapLocation.X * zoomFactor), (int)(mapLocation.Y * zoomFactor));
+        }
+
         private void pictureBoxMap_Click(object sender, EventArgs e)
         {
             MouseEventArgs eMouse = (MouseEventArgs)e;
@@ -86,34 +104,37 @@ namespace FormsMapController
             recentClick = eMouse.Location;
         }
 
-        private void pictureBoxMap_Paint(object sender, PaintEventArgs e)
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             e.Graphics.Clear(Color.White);
+
+            Point invertedPan = new Point(-Pan.X, -Pan.Y);
 
             if (!(mapImage is null))
             {
                 Size zoom = new Size((int)(MapImage.Width * ZoomFactor), (int)(MapImage.Height * ZoomFactor));
-                e.Graphics.DrawImage(MapImage, new Rectangle(Pan, zoom));
+                e.Graphics.DrawImage(MapImage, new Rectangle(invertedPan, zoom));
             }
 
-            DrawMisc(e.Graphics);
-        }
-
-        private void DrawMisc(Graphics g)
-        {
-            g.FillRectangle(Brushes.Red, new Rectangle(recentClick, new Size(10, 10)));
+            // Misc
+            e.Graphics.FillRectangle(Brushes.Red, new Rectangle(recentClick, new Size(10, 10)));
 
             foreach (var marker in mapMarkers)
             {
-                g.DrawImage(marker.Icon, marker.MarkerRectangle(Pan, zoomFactor));
+                e.Graphics.DrawImage(marker.Icon, marker.MarkerPixelRectangle(zoomFactor));
             }
+
+            // Cursor position
+            e.Graphics.DrawString(cursorPosition.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF(0, 0));
         }
 
-        private MapMarker GetMapMarker(Point location)
+        private MapMarker GetMapMarker(Point mapLocation)
         {
+            Point absoluteLocation = ConvertMapUnitsToAbsolutePixel(mapLocation, ZoomFactor);
+
             foreach (var marker in mapMarkers)
             {
-                if (marker.MarkerRectangle(Point.Empty, 1).Contains(new Point(location.X + Pan.X, location.Y + Pan.Y)))
+                if (marker.MarkerPixelRectangle(ZoomFactor).Contains(absoluteLocation))
                 {
                     return marker;
                 }
@@ -122,21 +143,40 @@ namespace FormsMapController
             return null;
         }
 
-        private void pictureBoxMap_MouseDown(object sender, MouseEventArgs e)
+        private void OnMouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                panning = true;
-                startLocation = new Point(e.Location.X - Pan.X, e.Location.Y - Pan.Y);
-                recentClick = Pan;
+            int delta = e.Delta / SystemInformation.MouseWheelScrollDelta;
+            float zoomDelta = ZoomIncrement * delta;
 
-                draggedMarker = GetMapMarker(e.Location);
-            }
+            ZoomFactor = Math.Min(Math.Max(zoomDelta + ZoomFactor, ZoomMin), ZoomMax);
+
+            // Recalculate pan
+            Point zoomPoint = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
+            Point offset = new Point((int)(zoomPoint.X * zoomDelta), (int)(zoomPoint.Y * zoomDelta));
+            Pan = new Point(Pan.X + offset.X, Pan.Y + offset.Y);
+
+            cursorPosition = ConvertRelativePixelToMapUnits(e.Location, Pan, ZoomFactor);
         }
 
-        private void pictureBoxMap_MouseUp(object sender, MouseEventArgs e)
+        private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            Point newMarkerLocation = new Point(e.Location.X + pan.X, e.Location.Y + pan.Y);
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            Cursor = Cursors.Cross;
+            panning = true;
+            startLocation = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
+            recentClick = Pan;
+
+            draggedMarker = GetMapMarker(e.Location);
+        }
+
+        private void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            // Point absolutePixelLocation = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
+            Point mapLocation = ConvertRelativePixelToMapUnits(e.Location, Pan, ZoomFactor);
 
             // place new marker
             if (e.Button == MouseButtons.Left)
@@ -144,9 +184,10 @@ namespace FormsMapController
                 // move dragged marker
                 if (!(draggedMarker is null))
                 {
-                    draggedMarker.Location = newMarkerLocation;
+                    draggedMarker.MapLocation = mapLocation;
                 }
 
+                Cursor = Cursors.Default;
                 panning = false;
                 pictureBoxMap.Invalidate();
             }
@@ -154,7 +195,7 @@ namespace FormsMapController
             {
                 if (draggedMarker is null)
                 {
-                    AddMarker(new MapMarker(newMarkerLocation, Properties.Resources.pinpoint));
+                    AddMarker(new MapMarker(mapLocation, Properties.Resources.pinpoint));
                 }
 
                 draggedMarker = null;
@@ -162,16 +203,19 @@ namespace FormsMapController
             }
         }
 
-        private void pictureBoxMap_MouseMove(object sender, MouseEventArgs e)
+        private void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (panning)
             {
                 Pan = new Point(
-                    e.Location.X - startLocation.X,
-                    e.Location.Y - startLocation.Y);
+                    startLocation.X - e.Location.X,
+                    startLocation.Y - e.Location.Y);
 
                 pictureBoxMap.Invalidate();
+                return;
             }
+
+            cursorPosition = ConvertRelativePixelToMapUnits(e.Location, Pan, ZoomFactor);
 
             MapMarker marker = GetMapMarker(e.Location);
 
@@ -183,13 +227,11 @@ namespace FormsMapController
             {
                 Cursor = Cursors.Hand;
 
-                Point newMarkerLocation = new Point(
-                    e.Location.X + pan.X,
-                    e.Location.Y + pan.Y);
+                Point newMarkerLocation = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
 
                 if (e.Button == MouseButtons.Left && !(draggedMarker is null))
                 {
-                    draggedMarker.Location = newMarkerLocation;
+                    draggedMarker.MapLocation = newMarkerLocation;
                 }
 
                 pictureBoxMap.Invalidate();
@@ -198,23 +240,26 @@ namespace FormsMapController
 
         public class MapMarker
         {
-            public Point Location;
+            public Point MapLocation;
             public Image Icon;
-            private readonly Size markerSize = new Size(25, 40);
+            private readonly Size pixelSize = new Size(25, 40);
 
-            public MapMarker(Point location, Image icon)
+            public MapMarker(Point mapLocation, Image icon)
             {
-                Location = location;
+                MapLocation = mapLocation;
                 Icon = icon;
             }
 
-            public Point IconOffset() => new Point(markerSize.Width / 2, -markerSize.Height);
+            public Point IconOffset() => new Point(pixelSize.Width / 2, -pixelSize.Height);
 
-            public Rectangle MarkerRectangle(Point pan, float zoomFactor)
+            public Rectangle MarkerPixelRectangle(float zoomFactor)
             {
+                Point pixelLocation = ConvertMapUnitsToAbsolutePixel(MapLocation, zoomFactor);
+
                 return new Rectangle(
-                Location.X - (markerSize.Width / 2) + pan.X, Location.Y - markerSize.Height + pan.Y,
-                (int)(markerSize.Width * zoomFactor), (int)(markerSize.Height * zoomFactor));
+                    pixelLocation.X - (pixelSize.Width / 2),
+                    pixelLocation.Y - pixelSize.Height,
+                    pixelSize.Width, pixelSize.Height);
             }
         }
     }

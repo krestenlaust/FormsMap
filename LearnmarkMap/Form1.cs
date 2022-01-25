@@ -19,6 +19,10 @@ namespace LearnmarkMap
 
             numericUpDownPanX.Maximum = 100;
             numericUpDownPanY.Maximum = 100;
+
+            updatingProperty = true;
+            formsMap1.ZoomFactor = (float)numericUpDownZoomFactor.Value;
+            updatingProperty = false;
         }
 
         private void formsMap1_PanChanged(object sender, EventArgs e)

@@ -64,8 +64,8 @@ namespace LearnmarkMap
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.formsMap1);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 450);
-            this.splitContainer1.SplitterDistance = 225;
+            this.splitContainer1.Size = new System.Drawing.Size(916, 524);
+            this.splitContainer1.SplitterDistance = 257;
             this.splitContainer1.TabIndex = 1;
             // 
             // groupBoxZoom
@@ -83,7 +83,7 @@ namespace LearnmarkMap
             // 
             this.numericUpDownZoomFactor.DecimalPlaces = 1;
             this.numericUpDownZoomFactor.Increment = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             65536});
@@ -102,7 +102,7 @@ namespace LearnmarkMap
             this.numericUpDownZoomFactor.Size = new System.Drawing.Size(131, 22);
             this.numericUpDownZoomFactor.TabIndex = 2;
             this.numericUpDownZoomFactor.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             65536});
@@ -191,7 +191,7 @@ namespace LearnmarkMap
             this.formsMap1.MapImage = global::LearnmarkMap.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
             this.formsMap1.Name = "formsMap1";
             this.formsMap1.Pan = new System.Drawing.Point(0, 0);
-            this.formsMap1.Size = new System.Drawing.Size(571, 450);
+            this.formsMap1.Size = new System.Drawing.Size(655, 524);
             this.formsMap1.TabIndex = 0;
             this.formsMap1.ZoomFactor = 1F;
             this.formsMap1.PanChanged += new System.EventHandler(this.formsMap1_PanChanged);
@@ -202,7 +202,7 @@ namespace LearnmarkMap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(916, 524);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Form1";
             this.Text = "Form1";
