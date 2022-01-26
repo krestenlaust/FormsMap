@@ -102,10 +102,10 @@ namespace LearnmarkMap
             this.numericUpDownZoomFactor.Size = new System.Drawing.Size(131, 22);
             this.numericUpDownZoomFactor.TabIndex = 2;
             this.numericUpDownZoomFactor.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
-            65536});
+            0});
             this.numericUpDownZoomFactor.ValueChanged += new System.EventHandler(this.numericUpDownZoomFactor_ValueChanged);
             // 
             // label3

@@ -41,7 +41,6 @@
             this.pictureBoxMap.Size = new System.Drawing.Size(800, 450);
             this.pictureBoxMap.TabIndex = 0;
             this.pictureBoxMap.TabStop = false;
-            this.pictureBoxMap.Click += new System.EventHandler(this.pictureBoxMap_Click);
             this.pictureBoxMap.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.pictureBoxMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
             this.pictureBoxMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);

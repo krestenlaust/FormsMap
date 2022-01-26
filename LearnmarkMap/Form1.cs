@@ -14,11 +14,11 @@ namespace LearnmarkMap
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            numericUpDownPanX.Minimum = -formsMap1.MapImage.Width + 100;
-            numericUpDownPanY.Minimum = -formsMap1.MapImage.Height + 100;
+            numericUpDownPanX.Minimum = -100;
+            numericUpDownPanY.Minimum = -100;
 
-            numericUpDownPanX.Maximum = 100;
-            numericUpDownPanY.Maximum = 100;
+            numericUpDownPanX.Maximum = formsMap1.MapImage.Width  + 100;
+            numericUpDownPanY.Maximum = formsMap1.MapImage.Height + 100;
 
             updatingProperty = true;
             formsMap1.ZoomFactor = (float)numericUpDownZoomFactor.Value;
