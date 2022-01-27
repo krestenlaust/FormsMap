@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}</ProjectGuid>
+    <ProjectGuid>{287843D0-0FD6-47B5-B493-516676C7A1FA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>LearnmarkMap</RootNamespace>
-    <AssemblyName>LearnmarkMap</AssemblyName>
+    <RootNamespace>FormsMapDemo</RootNamespace>
+    <AssemblyName>FormsMapDemo</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

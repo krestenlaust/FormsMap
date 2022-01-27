@@ -29,18 +29,18 @@ namespace LPSView
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2});
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Lytter110Dør");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Lytter110Foran");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
-            treeNode4,
-            treeNode5,
-            treeNode6});
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
+            treeNode8,
+            treeNode9});
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Lytter110Dør");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Lytter110Foran");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
+            treeNode11,
+            treeNode12,
+            treeNode13});
             this.formsMap1 = new FormsMapController.FormsMap();
             this.button1 = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -66,12 +66,12 @@ namespace LPSView
             // 
             this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.formsMap1.Location = new System.Drawing.Point(0, 0);
-            this.formsMap1.MapImage = null;
+            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
             this.formsMap1.Name = "formsMap1";
             this.formsMap1.Pan = new System.Drawing.Point(0, 0);
             this.formsMap1.Size = new System.Drawing.Size(589, 450);
             this.formsMap1.TabIndex = 0;
-            this.formsMap1.ZoomFactor = 0.1F;
+            this.formsMap1.ZoomFactor = 0.5F;
             // 
             // button1
             // 
@@ -87,23 +87,23 @@ namespace LPSView
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "Node2";
-            treeNode1.Text = "MacBook Air Pro Mega";
-            treeNode2.Name = "Node3";
-            treeNode2.Text = "Lenovo-2jwk";
-            treeNode3.Name = "Node0";
-            treeNode3.Text = "Enheder";
-            treeNode4.Name = "Node4";
-            treeNode4.Text = "Lytter110Dør";
-            treeNode5.Name = "Node5";
-            treeNode5.Text = "Lytter110Bagved";
-            treeNode6.Name = "Node6";
-            treeNode6.Text = "Lytter110Foran";
-            treeNode7.Name = "Node1";
-            treeNode7.Text = "Stationer";
+            treeNode8.Name = "Node2";
+            treeNode8.Text = "MacBook Air Pro Mega";
+            treeNode9.Name = "Node3";
+            treeNode9.Text = "Lenovo-2jwk";
+            treeNode10.Name = "Node0";
+            treeNode10.Text = "Enheder";
+            treeNode11.Name = "Node4";
+            treeNode11.Text = "Lytter110Dør";
+            treeNode12.Name = "Node5";
+            treeNode12.Text = "Lytter110Bagved";
+            treeNode13.Name = "Node6";
+            treeNode13.Text = "Lytter110Foran";
+            treeNode14.Name = "Node1";
+            treeNode14.Text = "Stationer";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3,
-            treeNode7});
+            treeNode10,
+            treeNode14});
             this.treeView1.Size = new System.Drawing.Size(207, 247);
             this.treeView1.TabIndex = 2;
             // 

@@ -5,14 +5,14 @@ VisualStudioVersion = 16.0.31727.386
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsMapController", "FormsMapController\FormsMapController.csproj", "{46734C87-A94E-4C87-B6A4-3CA388E4A379}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnmarkMap", "LearnmarkMap\LearnmarkMap.csproj", "{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4208B3D7-03BE-4386-8A65-953B026CD9C2}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LPSView", "LPSView\LPSView.csproj", "{51AE1C41-C477-4E3A-84AB-E35EEEB331D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsMapDemo", "LearnmarkMap\FormsMapDemo.csproj", "{287843D0-0FD6-47B5-B493-516676C7A1FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +24,14 @@ Global
 		{46734C87-A94E-4C87-B6A4-3CA388E4A379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46734C87-A94E-4C87-B6A4-3CA388E4A379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46734C87-A94E-4C87-B6A4-3CA388E4A379}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2FA6573-9932-4EF5-8F9F-1E7433A3DBA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51AE1C41-C477-4E3A-84AB-E35EEEB331D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51AE1C41-C477-4E3A-84AB-E35EEEB331D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51AE1C41-C477-4E3A-84AB-E35EEEB331D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51AE1C41-C477-4E3A-84AB-E35EEEB331D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{287843D0-0FD6-47B5-B493-516676C7A1FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{287843D0-0FD6-47B5-B493-516676C7A1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{287843D0-0FD6-47B5-B493-516676C7A1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{287843D0-0FD6-47B5-B493-516676C7A1FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
