@@ -10,11 +10,16 @@ using System.Windows.Forms;
 
 namespace LPSView
 {
-    public partial class Form1 : Form
+    public partial class FormLPSView : Form
     {
-        public Form1()
+        public FormLPSView()
         {
             InitializeComponent();
+        }
+
+        private void FormLPSView_Load(object sender, EventArgs e)
+        {
+            
         }
     }
 }
