@@ -29,20 +29,19 @@ namespace LPSView
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
-            treeNode8,
-            treeNode9});
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Lytter110Dør");
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Lytter110Foran");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
-            treeNode11,
-            treeNode12,
-            treeNode13});
-            this.formsMap1 = new FormsMapController.FormsMap();
-            this.button1 = new System.Windows.Forms.Button();
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2});
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Lytter110Dør");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Lytter110Foran");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
+            treeNode4,
+            treeNode5,
+            treeNode6});
+            this.buttonConfigure = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -50,6 +49,7 @@ namespace LPSView
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButtonPointerCreateStation = new System.Windows.Forms.RadioButton();
             this.radioButtonPointer = new System.Windows.Forms.RadioButton();
+            this.formsMap1 = new FormsMapController.FormsMap();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -62,48 +62,38 @@ namespace LPSView
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // formsMap1
+            // buttonConfigure
             // 
-            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.formsMap1.Location = new System.Drawing.Point(0, 0);
-            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
-            this.formsMap1.Name = "formsMap1";
-            this.formsMap1.Pan = new System.Drawing.Point(0, 0);
-            this.formsMap1.Size = new System.Drawing.Size(589, 450);
-            this.formsMap1.TabIndex = 0;
-            this.formsMap1.ZoomFactor = 0.5F;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(9, 21);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(97, 33);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Konfigurer";
-            this.button1.UseVisualStyleBackColor = true;
+            this.buttonConfigure.Location = new System.Drawing.Point(9, 21);
+            this.buttonConfigure.Name = "buttonConfigure";
+            this.buttonConfigure.Size = new System.Drawing.Size(97, 33);
+            this.buttonConfigure.TabIndex = 1;
+            this.buttonConfigure.Text = "Konfigurer";
+            this.buttonConfigure.UseVisualStyleBackColor = true;
+            this.buttonConfigure.Click += new System.EventHandler(this.buttonConfigure_Click);
             // 
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode8.Name = "Node2";
-            treeNode8.Text = "MacBook Air Pro Mega";
-            treeNode9.Name = "Node3";
-            treeNode9.Text = "Lenovo-2jwk";
-            treeNode10.Name = "Node0";
-            treeNode10.Text = "Enheder";
-            treeNode11.Name = "Node4";
-            treeNode11.Text = "Lytter110Dør";
-            treeNode12.Name = "Node5";
-            treeNode12.Text = "Lytter110Bagved";
-            treeNode13.Name = "Node6";
-            treeNode13.Text = "Lytter110Foran";
-            treeNode14.Name = "Node1";
-            treeNode14.Text = "Stationer";
+            treeNode1.Name = "Node2";
+            treeNode1.Text = "MacBook Air Pro Mega";
+            treeNode2.Name = "Node3";
+            treeNode2.Text = "Lenovo-2jwk";
+            treeNode3.Name = "Node0";
+            treeNode3.Text = "Enheder";
+            treeNode4.Name = "Node4";
+            treeNode4.Text = "Lytter110Dør";
+            treeNode5.Name = "Node5";
+            treeNode5.Text = "Lytter110Bagved";
+            treeNode6.Name = "Node6";
+            treeNode6.Text = "Lytter110Foran";
+            treeNode7.Name = "Node1";
+            treeNode7.Text = "Stationer";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode10,
-            treeNode14});
+            treeNode3,
+            treeNode7});
             this.treeView1.Size = new System.Drawing.Size(207, 247);
             this.treeView1.TabIndex = 2;
             // 
@@ -145,7 +135,7 @@ namespace LPSView
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.groupBox2);
-            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.buttonConfigure);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
@@ -188,6 +178,17 @@ namespace LPSView
             this.radioButtonPointer.Text = "Markør";
             this.radioButtonPointer.UseVisualStyleBackColor = true;
             // 
+            // formsMap1
+            // 
+            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.formsMap1.Location = new System.Drawing.Point(0, 0);
+            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
+            this.formsMap1.Name = "formsMap1";
+            this.formsMap1.Pan = new System.Drawing.Point(0, 0);
+            this.formsMap1.Size = new System.Drawing.Size(589, 450);
+            this.formsMap1.TabIndex = 0;
+            this.formsMap1.ZoomFactor = 0.5F;
+            // 
             // FormLPSView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -215,7 +216,7 @@ namespace LPSView
         #endregion
 
         private FormsMapController.FormsMap formsMap1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonConfigure;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;

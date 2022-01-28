@@ -21,5 +21,11 @@ namespace LPSView
         {
             
         }
+
+        private void buttonConfigure_Click(object sender, EventArgs e)
+        {
+            ConfigForm configForm = new ConfigForm();
+            configForm.Show();
+        }
     }
 }
