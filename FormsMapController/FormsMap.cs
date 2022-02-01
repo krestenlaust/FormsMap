@@ -21,7 +21,6 @@ namespace FormsMapController
         private bool panning = false;
         private Image mapImage;
         private MapMarker draggedMarker = null;
-        private GraphicsPoint cursorPosition;
         private Size currentMapSize;
 
         public FormsMap()
@@ -148,9 +147,6 @@ namespace FormsMapController
                 Debug.WriteLine(marker.MarkerPixelRectangle.X);
                 e.Graphics.DrawImage(marker.Icon, marker.MarkerPixelRectangle);
             }
-
-            // Cursor position
-            e.Graphics.DrawString(cursorPosition.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF(5, 5));
         }
 
         private MapMarker GetMapMarker(GraphicsPoint location)
@@ -179,8 +175,6 @@ namespace FormsMapController
             Point zoomPoint = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
             Point offset = new Point((int)(zoomPoint.X * zoomDelta), (int)(zoomPoint.Y * zoomDelta));
             Pan = new Point(Pan.X + offset.X, Pan.Y + offset.Y);
-
-            cursorPosition = location;
         }
 
         private void OnMouseDown(object sender, MouseEventArgs e)

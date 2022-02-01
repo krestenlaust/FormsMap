@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using FormsMapController;
+using log4net;
 using Microsoft.VisualBasic;
 using WifiFinderAlgorithm;
+using static FormsMapController.FormsMap;
 
 namespace LPSView
 {
@@ -14,31 +16,57 @@ namespace LPSView
     {
         TreeNode stationRootNode;
         TreeNode deviceRootNode;
-        Dictionary<long, FormsMap.MapMarker> deviceMarkers = new Dictionary<long, FormsMap.MapMarker>();
-        List<FormsMap.MapMarker> stationMarkers = new List<FormsMap.MapMarker>();
-        Dictionary<TreeNode, FormsMap.MapMarker> markerByNode = new Dictionary<TreeNode, FormsMap.MapMarker>();
-        bool addingDevice = false;
+        long? addedDevice = null;
+        ILog log;
 
         public FormLPSView()
         {
             InitializeComponent();
+            log = LogManager.GetLogger(GetType().Name);
 
             formsMap1.MarkerAdded += FormsMap1_MarkerAdded;
         }
 
         private void FormsMap1_MarkerAdded(object sender, EventArgs e)
         {
-            FormsMap.MarkerAddedEventArgs eArg = (FormsMap.MarkerAddedEventArgs) e;
+            MarkerAddedEventArgs eArg = (MarkerAddedEventArgs) e;
             
-            if (radioButtonPointerCreateStation.Checked && !addingDevice)
+            if (radioButtonPointerCreateStation.Checked && addedDevice is null)
             {
-                stationMarkers.Add(eArg.NewMarker);
+                // New marker is a station.
+                Station nodeTag = new Station(eArg.NewMarker);
 
-                markerByNode[stationRootNode.Nodes.Add($"Station {stationMarkers.Count}")] = eArg.NewMarker;
+                string nodeText = $"Station {stationRootNode.Nodes.Count + 1}";
+
+                TreeNode newNode = stationRootNode.Nodes.Add(nodeText);
+                newNode.Tag = nodeTag;
+
+                log.Debug($"Added station, ID: {nodeTag.ID}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
             }
             else
             {
-                markerByNode[deviceRootNode.Nodes.Add($"Ny enhed: {deviceMarkers.Count}")] = eArg.NewMarker;
+                // Debug
+                if (addedDevice is null)
+                {
+                    log.Debug("Debugging device added");
+                    formsMap1.RemoveMarker(eArg.NewMarker);
+                    return;
+                    addedDevice = 10;
+                }
+
+                // New marker is a device.
+                Device nodeTag = new Device(eArg.NewMarker, addedDevice.Value);
+
+                string nodeKey = addedDevice.Value.ToString();
+                string nodeText = $"MAC {addedDevice}";
+
+                TreeNode newNode = deviceRootNode.Nodes.Add(nodeKey, nodeText);
+                newNode.Tag = nodeTag;
+
+                log.Debug($"Added device, MAC: {nodeTag.MacAddress}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
+
+                // Debug
+                addedDevice = null;
             }
         }
 
@@ -46,6 +74,8 @@ namespace LPSView
         {
             deviceRootNode = treeView1.Nodes[0];
             stationRootNode = treeView1.Nodes[1];
+
+            treeView1.ExpandAll();
 
             deviceRootNode.Nodes.Clear();
             stationRootNode.Nodes.Clear();
@@ -60,12 +90,25 @@ namespace LPSView
         private void buttonRemoveMarkers_Click(object sender, EventArgs e)
         {
             formsMap1.RemoveMarkers();
+
             stationRootNode.Nodes.Clear();
+        }
+
+        private IEnumerable<Station> GetStations()
+        {
+            foreach (var item in stationRootNode.Nodes)
+            {
+                TreeNode node = (TreeNode)item;
+
+                yield return (Station)node.Tag;
+            }
         }
 
         private void buttonRefreshData_Click(object sender, EventArgs e)
         {
-            if (stationMarkers.Count < 3)
+            IEnumerable<Station> stations = GetStations();
+
+            if (stations.Count() < 3)
             {
                 MessageBox.Show("Ikke nok stationer");
                 return;
@@ -78,28 +121,51 @@ namespace LPSView
                 return;
             }
 
-            var deviceData = QueryDatabase.ParseDataString(result);
+            // Create dictionary of station coordinate by ID.
+            Dictionary<byte, Coordinate> stationLookup = stations.ToDictionary(
+                key => key.ID,
+                element =>
+                    new Coordinate(element.MapMarker.Location.AbsoluteMap.X, element.MapMarker.Location.AbsoluteMap.Y));
 
-            Coordinate station1 = new Coordinate(stationMarkers[0].Location.AbsoluteMap.X, stationMarkers[0].Location.AbsoluteMap.Y);
-            Coordinate station2 = new Coordinate(stationMarkers[1].Location.AbsoluteMap.X, stationMarkers[1].Location.AbsoluteMap.Y);
-            Coordinate station3 = new Coordinate(stationMarkers[2].Location.AbsoluteMap.X, stationMarkers[2].Location.AbsoluteMap.Y);
+            // Get latest device information
+            Dictionary<long, Dictionary<byte, byte>> deviceData = QueryDatabase.ParseDataString(result);
 
-            var calculatedData = WifiDataThingy.GetDevicePositions(deviceData, station1, station2, station3);
+            // Translate device information into required target
+            Dictionary<long, Receiver[]> deviceInformation;
+            try
+            {
+                deviceInformation = deviceData.ToDictionary(
+                    key => key.Key,
+                    element =>
+                        element.Value.Select(station => new Receiver(stationLookup[station.Key], station.Value)).Take(3).ToArray());
+            }
+            catch (KeyNotFoundException ex)
+            {
+                string errorMessage = $"Missing station by ID: {ex}";
+                log.Error(errorMessage);
+                MessageBox.Show(errorMessage);
+                return;
+            }
+            
+            var calculatedData = WifiDataThingy.GetDevicePositions(deviceInformation);
 
-            addingDevice = true;
             foreach (var item in calculatedData)
             {
-                var newPoint = new FormsMap.GraphicsPoint(new Point((int)item.Item2.X, (int)item.Item2.Y), FormsMap.GraphicsPoint.PointRelation.AbsoluteMap, formsMap1);
-                if (deviceMarkers.TryGetValue(item.Item1, out FormsMap.MapMarker marker))
+                addedDevice = item.Item1;
+                var newPoint = new GraphicsPoint(new Point((int)item.Item2.X, (int)item.Item2.Y), FormsMap.GraphicsPoint.PointRelation.AbsoluteMap, formsMap1);
+
+                int deviceNodeIndex = deviceRootNode.Nodes.IndexOfKey(item.Item1.ToString());
+                if (deviceNodeIndex == -1)
                 {
-                    marker.Location = newPoint;
+                    addedDevice = item.Item1;
+                    formsMap1.AddDefaultMarker(newPoint, false);
+                    addedDevice = null;
                 }
                 else
                 {
-                    deviceMarkers[item.Item1] = formsMap1.AddDefaultMarker(newPoint, false);
+                    ((Device)deviceRootNode.Nodes[deviceNodeIndex].Tag).MapMarker.Location = newPoint;
                 }
             }
-            addingDevice = false;
 
             formsMap1.Refresh();
         }
@@ -107,11 +173,11 @@ namespace LPSView
         private void buttonSaveStations_Click(object sender, EventArgs e)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var item in stationMarkers)
+            foreach (var item in GetStations())
             {
-                sb.Append(item.Location.AbsoluteMap.X);
+                sb.Append(item.MapMarker.Location.AbsoluteMap.X);
                 sb.Append('.');
-                sb.Append(item.Location.AbsoluteMap.Y);
+                sb.Append(item.MapMarker.Location.AbsoluteMap.Y);
                 sb.Append(',');
             }
 
@@ -125,28 +191,46 @@ namespace LPSView
             try
             {
                 string[] points = loadstring.Split(',');
-                stationMarkers.Clear();
-                formsMap1.RemoveMarkers();
 
+                List<Point> markerPoints = new List<Point>();
                 foreach (var point in points)
                 {
                     string[] xAndY = point.Split('.');
                     int x = int.Parse(xAndY[0]);
                     int y = int.Parse(xAndY[1]);
 
-                    stationMarkers.Add(formsMap1.AddDefaultMarker(new FormsMap.GraphicsPoint(new Point(x, y), FormsMapController.FormsMap.GraphicsPoint.PointRelation.AbsoluteMap, formsMap1), true));
+                    markerPoints.Add(new Point(x, y));
                 }
+
+                foreach (var item in stationRootNode.Nodes)
+                {
+                    TreeNode node = (TreeNode)item;
+                    Station station = (Station)node.Tag;
+
+                    formsMap1.RemoveMarker(station.MapMarker);
+                }
+
+                stationRootNode.Nodes.Clear();
+
+                foreach (var point in markerPoints)
+                {
+                    formsMap1.AddDefaultMarker(
+                        new GraphicsPoint(point, GraphicsPoint.PointRelation.AbsoluteMap, formsMap1),
+                        true);
+                }
+
+                formsMap1.Refresh();
             }
-            catch (Exception)
+            catch (FormatException)
             {
             }
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (markerByNode.TryGetValue(e.Node, out FormsMap.MapMarker marker))
+            if (e.Node.Tag is MapEntity mapEntity)
             {
-                formsMap1.CenterMarker(marker);
+                formsMap1.CenterMarker(mapEntity.MapMarker);
             }
         }
 
@@ -157,16 +241,67 @@ namespace LPSView
                 return;
             }
 
-            if (markerByNode.TryGetValue(treeView1.SelectedNode, out FormsMap.MapMarker marker))
+            TreeNode currentNode = treeView1.SelectedNode;
+            if (currentNode.Tag is Station station)
             {
-                if (treeView1.SelectedNode.Parent == deviceRootNode)
-                {
+                formsMap1.RemoveMarker(station.MapMarker);
+                stationRootNode.Nodes.Remove(currentNode);
+            }
+        }
 
-                }
-                else if (treeView1.SelectedNode.Parent == stationRootNode)
-                {
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
 
+            if (e.Node.Tag is Station station)
+            {
+                StationConfigPrompt stationConfigPrompt = new StationConfigPrompt(
+                    e.Node.Text,
+                    station.ID,
+                    station.MapMarker.Location.AbsoluteMap);
+
+                if (stationConfigPrompt.ShowDialog() != DialogResult.Cancel)
+                {
+                    station.ID = (byte)stationConfigPrompt.StationID;
+                    station.MapMarker.Location = new GraphicsPoint(
+                        new Point(stationConfigPrompt.LocationX, stationConfigPrompt.LocationY),
+                        GraphicsPoint.PointRelation.AbsoluteMap,
+                        formsMap1);
+
+                    formsMap1.CenterMarker(station.MapMarker);
                 }
+            }
+        }
+
+        private class Station : MapEntity
+        {
+            public Station(MapMarker mapMarker) : base(mapMarker)
+            {
+            }
+
+            public byte ID { get; set; }
+        }
+
+        private class Device : MapEntity
+        {
+            public Device(MapMarker mapMarker, long macAddress) : base(mapMarker)
+            {
+                MacAddress = macAddress;
+            }
+
+            public long MacAddress { get; }
+        }
+
+        private class MapEntity
+        {
+            public MapMarker MapMarker { get; }
+
+            public MapEntity(MapMarker mapMarker)
+            {
+                MapMarker = mapMarker;
             }
         }
     }

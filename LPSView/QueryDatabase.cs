@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace LPSView
@@ -27,7 +26,6 @@ namespace LPSView
             NetworkStream stream = client.GetStream();
 
             stream.WriteByte(1);
-            Thread.Sleep(100);
 
             byte[] dataSizeBytes = new byte[sizeof(uint)];
             stream.Read(dataSizeBytes, 0, dataSizeBytes.Length);
@@ -44,7 +42,7 @@ namespace LPSView
         {
             Dictionary<long, Dictionary<byte, byte>> DeviceData = new Dictionary<long, Dictionary<byte, byte>>();
 
-            // MAC;enhed.rssi,enhed.rssi,enhed.rssi\n
+            // Example: MAC;enhed.rssi,enhed.rssi,enhed.rssi\n
             foreach (var item in data.Replace("\r", "").Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string[] singleMacDevice = item.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
