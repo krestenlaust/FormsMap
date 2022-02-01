@@ -46,6 +46,9 @@ namespace LPSView
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonSaveStations = new System.Windows.Forms.Button();
+            this.buttonRefreshData = new System.Windows.Forms.Button();
+            this.buttonRemoveMarkers = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButtonPointerCreateStation = new System.Windows.Forms.RadioButton();
             this.radioButtonPointer = new System.Windows.Forms.RadioButton();
@@ -96,6 +99,8 @@ namespace LPSView
             treeNode7});
             this.treeView1.Size = new System.Drawing.Size(207, 247);
             this.treeView1.TabIndex = 2;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
             // splitContainer1
             // 
@@ -134,6 +139,9 @@ namespace LPSView
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.buttonSaveStations);
+            this.groupBox1.Controls.Add(this.buttonRefreshData);
+            this.groupBox1.Controls.Add(this.buttonRemoveMarkers);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.buttonConfigure);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -143,6 +151,36 @@ namespace LPSView
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Værktøjer";
+            // 
+            // buttonSaveStations
+            // 
+            this.buttonSaveStations.Location = new System.Drawing.Point(112, 60);
+            this.buttonSaveStations.Name = "buttonSaveStations";
+            this.buttonSaveStations.Size = new System.Drawing.Size(89, 52);
+            this.buttonSaveStations.TabIndex = 4;
+            this.buttonSaveStations.Text = "Station data";
+            this.buttonSaveStations.UseVisualStyleBackColor = true;
+            this.buttonSaveStations.Click += new System.EventHandler(this.buttonSaveStations_Click);
+            // 
+            // buttonRefreshData
+            // 
+            this.buttonRefreshData.Location = new System.Drawing.Point(112, 21);
+            this.buttonRefreshData.Name = "buttonRefreshData";
+            this.buttonRefreshData.Size = new System.Drawing.Size(89, 33);
+            this.buttonRefreshData.TabIndex = 3;
+            this.buttonRefreshData.Text = "Opdatér";
+            this.buttonRefreshData.UseVisualStyleBackColor = true;
+            this.buttonRefreshData.Click += new System.EventHandler(this.buttonRefreshData_Click);
+            // 
+            // buttonRemoveMarkers
+            // 
+            this.buttonRemoveMarkers.Location = new System.Drawing.Point(9, 60);
+            this.buttonRemoveMarkers.Name = "buttonRemoveMarkers";
+            this.buttonRemoveMarkers.Size = new System.Drawing.Size(97, 32);
+            this.buttonRemoveMarkers.TabIndex = 2;
+            this.buttonRemoveMarkers.Text = "Fjern stationer";
+            this.buttonRemoveMarkers.UseVisualStyleBackColor = true;
+            this.buttonRemoveMarkers.Click += new System.EventHandler(this.buttonRemoveMarkers_Click);
             // 
             // groupBox2
             // 
@@ -184,10 +222,10 @@ namespace LPSView
             this.formsMap1.Location = new System.Drawing.Point(0, 0);
             this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
             this.formsMap1.Name = "formsMap1";
-            this.formsMap1.Pan = new System.Drawing.Point(0, 0);
+            this.formsMap1.Pan = new System.Drawing.Point(650, 550);
             this.formsMap1.Size = new System.Drawing.Size(589, 450);
             this.formsMap1.TabIndex = 0;
-            this.formsMap1.ZoomFactor = 0.5F;
+            this.formsMap1.ZoomFactor = 1F;
             // 
             // FormLPSView
             // 
@@ -224,6 +262,9 @@ namespace LPSView
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButtonPointerCreateStation;
         private System.Windows.Forms.RadioButton radioButtonPointer;
+        private System.Windows.Forms.Button buttonRemoveMarkers;
+        private System.Windows.Forms.Button buttonRefreshData;
+        private System.Windows.Forms.Button buttonSaveStations;
     }
 }
 

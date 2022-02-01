@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace LPSView
 {
@@ -17,6 +18,12 @@ namespace LPSView
 
         public static string GetRecentData()
         {
+            if (client is null)
+            {
+                MessageBox.Show("Ikke forbundet til database");
+                return null;
+            }
+
             NetworkStream stream = client.GetStream();
 
             stream.WriteByte(1);
@@ -38,14 +45,20 @@ namespace LPSView
             Dictionary<long, Dictionary<byte, byte>> DeviceData = new Dictionary<long, Dictionary<byte, byte>>();
 
             // MAC;enhed.rssi,enhed.rssi,enhed.rssi\n
-            foreach (var item in data.Split('\n'))
+            foreach (var item in data.Replace("\r", "").Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                string[] singleMacDevice = item.Split(';');
+                string[] singleMacDevice = item.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
                 long mac = long.Parse(singleMacDevice[0]);
+
+                if (singleMacDevice.Length == 1)
+                {
+                    continue;
+                }
+
                 DeviceData[mac] = new Dictionary<byte, byte>();
 
-                foreach (var singleStation in singleMacDevice[1].Split(','))
+                foreach (string singleStation in singleMacDevice[1].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     string[] collection = singleStation.Split('.');
 

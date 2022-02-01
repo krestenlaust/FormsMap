@@ -188,7 +188,7 @@ namespace LearnmarkMap
             // 
             this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.formsMap1.Location = new System.Drawing.Point(0, 0);
-            this.formsMap1.MapImage = global::LearnmarkMap.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
+            this.formsMap1.MapImage = global::FormsMapDemo.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
             this.formsMap1.Name = "formsMap1";
             this.formsMap1.Pan = new System.Drawing.Point(0, 0);
             this.formsMap1.Size = new System.Drawing.Size(655, 524);

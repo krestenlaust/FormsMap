@@ -32,6 +32,9 @@ namespace FormsMapController
         }
 
         [Browsable(true)]
+        public event EventHandler MarkerAdded;
+
+        [Browsable(true)]
         [Category("Property Changed"), Description("Notifies whenever user is panning.")]
         public event EventHandler PanChanged;
 
@@ -82,10 +85,47 @@ namespace FormsMapController
             }
         }
 
-        public void AddMarker(MapMarker mapMarker)
+        public void AddMarker(MapMarker marker)
         {
-            mapMarkers.Add(mapMarker);
+            mapMarkers.Add(marker);
         }
+
+        public void CenterMarker(MapMarker marker)
+        {
+            Pan = new Point(marker.Location.AbsolutePixel.X - (pictureBoxMap.Width / 2), marker.Location.AbsolutePixel.Y - (pictureBoxMap.Height / 2));
+            Refresh();
+        }
+
+        public MapMarker AddDefaultMarker(GraphicsPoint point, bool draggable)
+        {
+            MapMarker newMarker = new MapMarker(point, Properties.Resources.pinpoint, draggable);
+            AddMarker(newMarker);
+
+            return newMarker;
+        }
+
+        public void RemoveMarkers()
+        {
+            mapMarkers.Clear();
+        }
+
+        public class MarkerAddedEventArgs : EventArgs
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MarkerAddedEventArgs"/> class.
+            /// </summary>
+            /// <param name="newMarker"></param>
+            public MarkerAddedEventArgs(MapMarker newMarker)
+            {
+                NewMarker = newMarker;
+            }
+
+            public MapMarker NewMarker { get; set; }
+        }
+
+        public void RemoveMarker(MapMarker mapMarker) => mapMarkers.Remove(mapMarker);
+
+        public List<MapMarker> GetMarkers() => mapMarkers;
 
         public new void Refresh() => pictureBoxMap.Invalidate();
 
@@ -151,6 +191,11 @@ namespace FormsMapController
 
                 draggedMarker = GetMapMarker(location);
 
+                if (!(draggedMarker is null) && !draggedMarker.Draggable)
+                {
+                    draggedMarker = null;
+                }
+
                 // Pan only if no marker is being dragged.
                 if (draggedMarker is null)
                 {
@@ -175,6 +220,8 @@ namespace FormsMapController
                     draggedMarker.Location = location;
                 }
 
+                draggedMarker = null;
+
                 panning = false;
                 pictureBoxMap.Invalidate();
             }
@@ -182,7 +229,10 @@ namespace FormsMapController
             {
                 if (draggedMarker is null)
                 {
-                    AddMarker(new MapMarker(location, Properties.Resources.pinpoint));
+                    MapMarker newMapMarker = new MapMarker(location, Properties.Resources.pinpoint, true);
+                    AddMarker(newMapMarker);
+
+                    MarkerAdded?.Invoke(this, new MarkerAddedEventArgs(newMapMarker));
                 }
 
                 draggedMarker = null;
@@ -310,6 +360,9 @@ namespace FormsMapController
             }
         }
 
+        /// <summary>
+        /// A marker for the <c>FormsMap</c>-control.
+        /// </summary>
         public class MapMarker
         {
             private readonly Size pixelSize = new Size(25, 40);
@@ -319,18 +372,33 @@ namespace FormsMapController
             /// </summary>
             /// <param name="location"></param>
             /// <param name="icon"></param>
-            public MapMarker(GraphicsPoint location, Image icon)
+            public MapMarker(GraphicsPoint location, Image icon, bool draggable)
             {
                 Location = location;
                 Icon = icon;
+                Draggable = draggable;
             }
 
+            /// <summary>
+            /// Gets or sets a value indicating whether a marker is dragable.
+            /// </summary>
+            public bool Draggable { get; set; }
+
+            /// <summary>
+            /// Gets or sets the position of the marker.
+            /// </summary>
             public GraphicsPoint Location { get; set; }
 
+            /// <summary>
+            /// Gets or sets the image icon displayed as the marker.
+            /// </summary>
             public Image Icon { get; set; }
 
             public Point IconOffset => new Point(pixelSize.Width / 2, -pixelSize.Height);
 
+            /// <summary>
+            /// Gets the relative hitbox of the marker.
+            /// </summary>
             public Rectangle MarkerPixelRectangle =>
                 new Rectangle(
                     Location.RelativePixel.X - (pixelSize.Width / 2),

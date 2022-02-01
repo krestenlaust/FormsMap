@@ -25,15 +25,14 @@ namespace LPSView
 
         private void buttonManualQuery_Click(object sender, EventArgs e)
         {
-            string result = QueryDatabase.GetRecentData();
-            devices = QueryDatabase.ParseDataString(result);
-            labelDataCollected.Text = devices.Count.ToString();
+            //string result = QueryDatabase.GetRecentData();
+            //devices = QueryDatabase.ParseDataString(result);
+            //labelDataCollected.Text = devices.Count.ToString();
         }
-
-        Dictionary<long, Dictionary<byte, byte>> devices = new Dictionary<long, Dictionary<byte, byte>>();
 
         private void buttonCalculate_Click(object sender, EventArgs e)
         {
+            /*
             Coordinate station1 = new Coordinate((float)numericUpDownStation1X.Value, (float)numericUpDownStation1Y.Value);
             Coordinate station2 = new Coordinate((float)numericUpDownStation2X.Value, (float)numericUpDownStation2Y.Value);
             Coordinate station3 = new Coordinate((float)numericUpDownStation3X.Value, (float)numericUpDownStation3Y.Value);
@@ -57,7 +56,7 @@ namespace LPSView
                 sb.AppendLine("lokation: " + intersection);
             }
 
-            richTextBoxAlgoOutput.Text = sb.ToString();
+            richTextBoxAlgoOutput.Text = sb.ToString();*/
         }
     }
 }
