@@ -90,6 +90,7 @@ namespace LPSView
         private void buttonStopDataPull_Click(object sender, EventArgs e)
         {
             timerPullData.Stop();
+            toolStripStatusLabel.Text = "Stoppede dataindsamling";
         }
 
         private IEnumerable<Station> GetStations()
@@ -106,11 +107,12 @@ namespace LPSView
         {
             if (GetStations().Count() < 3)
             {
-                MessageBox.Show("Ikke nok stationer");
+                toolStripStatusLabel.Text = "Ikke nok stationer";
                 return;
             }
 
             timerPullData.Start();
+            toolStripStatusLabel.Text = "Startede opsamling";
         }
 
         private void timerPullData_Tick(object sender, EventArgs e)
