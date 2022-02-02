@@ -10,6 +10,12 @@ namespace LPSView
     {
         private static TcpClient client;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hostname"></param>
+        /// <param name="port"></param>
+        /// <exception cref="SocketException"></exception>
         public static void ConnectDatabase(string hostname, int port)
         {
             client = new TcpClient(hostname, port);

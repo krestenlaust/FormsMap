@@ -10,7 +10,7 @@ namespace LPSView
 {
     static class Program
     {
-        internal static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        internal static readonly ILog Log = LogManager.GetLogger(typeof(Program));
 
         /// <summary>
         /// The main entry point for the application.
@@ -21,7 +21,7 @@ namespace LPSView
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            XmlConfigurator.Configure();
+            Log.Info("Starting application");
 
             Application.Run(new FormLPSView());
         }

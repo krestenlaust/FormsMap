@@ -22,7 +22,7 @@ namespace LPSView
         public FormLPSView()
         {
             InitializeComponent();
-            log = LogManager.GetLogger(GetType().Name);
+            log = LogManager.GetLogger(GetType());
 
             formsMap1.MarkerAdded += FormsMap1_MarkerAdded;
         }
@@ -87,11 +87,9 @@ namespace LPSView
             configForm.Show();
         }
 
-        private void buttonRemoveMarkers_Click(object sender, EventArgs e)
+        private void buttonStopDataPull_Click(object sender, EventArgs e)
         {
-            formsMap1.RemoveMarkers();
-
-            stationRootNode.Nodes.Clear();
+            timerPullData.Stop();
         }
 
         private IEnumerable<Station> GetStations()
@@ -104,16 +102,19 @@ namespace LPSView
             }
         }
 
-        private void buttonRefreshData_Click(object sender, EventArgs e)
+        private void buttonStartDataPull_Click(object sender, EventArgs e)
         {
-            IEnumerable<Station> stations = GetStations();
-
-            if (stations.Count() < 3)
+            if (GetStations().Count() < 3)
             {
                 MessageBox.Show("Ikke nok stationer");
                 return;
             }
 
+            timerPullData.Start();
+        }
+
+        private void timerPullData_Tick(object sender, EventArgs e)
+        {
             string result = QueryDatabase.GetRecentData();
 
             if (result is null)
@@ -122,7 +123,7 @@ namespace LPSView
             }
 
             // Create dictionary of station coordinate by ID.
-            Dictionary<byte, Coordinate> stationLookup = stations.ToDictionary(
+            Dictionary<byte, Coordinate> stationLookup = GetStations().ToDictionary(
                 key => key.ID,
                 element =>
                     new Coordinate(element.MapMarker.Location.AbsoluteMap.X, element.MapMarker.Location.AbsoluteMap.Y));
@@ -146,7 +147,7 @@ namespace LPSView
                 MessageBox.Show(errorMessage);
                 return;
             }
-            
+
             var calculatedData = WifiDataThingy.GetDevicePositions(deviceInformation);
 
             foreach (var item in calculatedData)

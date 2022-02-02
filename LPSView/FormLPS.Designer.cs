@@ -29,6 +29,7 @@ namespace LPSView
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
@@ -48,11 +49,12 @@ namespace LPSView
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonSaveStations = new System.Windows.Forms.Button();
             this.buttonRefreshData = new System.Windows.Forms.Button();
-            this.buttonRemoveMarkers = new System.Windows.Forms.Button();
+            this.buttonStopDataPull = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButtonPointerCreateStation = new System.Windows.Forms.RadioButton();
             this.radioButtonPointer = new System.Windows.Forms.RadioButton();
             this.formsMap1 = new FormsMapController.FormsMap();
+            this.timerPullData = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -144,7 +146,7 @@ namespace LPSView
             // 
             this.groupBox1.Controls.Add(this.buttonSaveStations);
             this.groupBox1.Controls.Add(this.buttonRefreshData);
-            this.groupBox1.Controls.Add(this.buttonRemoveMarkers);
+            this.groupBox1.Controls.Add(this.buttonStopDataPull);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.buttonConfigure);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -171,19 +173,19 @@ namespace LPSView
             this.buttonRefreshData.Name = "buttonRefreshData";
             this.buttonRefreshData.Size = new System.Drawing.Size(89, 33);
             this.buttonRefreshData.TabIndex = 3;
-            this.buttonRefreshData.Text = "Opdatér";
+            this.buttonRefreshData.Text = "Start";
             this.buttonRefreshData.UseVisualStyleBackColor = true;
-            this.buttonRefreshData.Click += new System.EventHandler(this.buttonRefreshData_Click);
+            this.buttonRefreshData.Click += new System.EventHandler(this.buttonStartDataPull_Click);
             // 
-            // buttonRemoveMarkers
+            // buttonStopDataPull
             // 
-            this.buttonRemoveMarkers.Location = new System.Drawing.Point(9, 60);
-            this.buttonRemoveMarkers.Name = "buttonRemoveMarkers";
-            this.buttonRemoveMarkers.Size = new System.Drawing.Size(97, 32);
-            this.buttonRemoveMarkers.TabIndex = 2;
-            this.buttonRemoveMarkers.Text = "Fjern stationer";
-            this.buttonRemoveMarkers.UseVisualStyleBackColor = true;
-            this.buttonRemoveMarkers.Click += new System.EventHandler(this.buttonRemoveMarkers_Click);
+            this.buttonStopDataPull.Location = new System.Drawing.Point(9, 60);
+            this.buttonStopDataPull.Name = "buttonStopDataPull";
+            this.buttonStopDataPull.Size = new System.Drawing.Size(97, 32);
+            this.buttonStopDataPull.TabIndex = 2;
+            this.buttonStopDataPull.Text = "Stop";
+            this.buttonStopDataPull.UseVisualStyleBackColor = true;
+            this.buttonStopDataPull.Click += new System.EventHandler(this.buttonStopDataPull_Click);
             // 
             // groupBox2
             // 
@@ -231,6 +233,11 @@ namespace LPSView
             this.formsMap1.TabIndex = 0;
             this.formsMap1.ZoomFactor = 1F;
             // 
+            // timerPullData
+            // 
+            this.timerPullData.Interval = 1000;
+            this.timerPullData.Tick += new System.EventHandler(this.timerPullData_Tick);
+            // 
             // FormLPSView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -266,9 +273,10 @@ namespace LPSView
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButtonPointerCreateStation;
         private System.Windows.Forms.RadioButton radioButtonPointer;
-        private System.Windows.Forms.Button buttonRemoveMarkers;
+        private System.Windows.Forms.Button buttonStopDataPull;
         private System.Windows.Forms.Button buttonRefreshData;
         private System.Windows.Forms.Button buttonSaveStations;
+        private System.Windows.Forms.Timer timerPullData;
     }
 }
 
