@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Windows.Forms;
-using FormsMapController;
 using log4net;
+using MacAddressVendorLookup;
 using Microsoft.VisualBasic;
 using WifiFinderAlgorithm;
 using static FormsMapController.FormsMap;
@@ -16,8 +17,9 @@ namespace LPSView
     {
         TreeNode stationRootNode;
         TreeNode deviceRootNode;
-        long? addedDevice = null;
+        bool deviceAdded = false;
         ILog log;
+        AddressMatcher addressMatcher;
 
         public FormLPSView()
         {
@@ -25,13 +27,26 @@ namespace LPSView
             log = LogManager.GetLogger(GetType());
 
             formsMap1.MarkerAdded += FormsMap1_MarkerAdded;
+
+            var vendorInfoProvider = new MacVendorBinaryReader();
+            using (var resourceStream = ManufBinResource.GetStream().Result)
+            {
+                vendorInfoProvider.Init(resourceStream).Wait();
+            }
+
+            addressMatcher = new AddressMatcher(vendorInfoProvider);
         }
 
         private void FormsMap1_MarkerAdded(object sender, EventArgs e)
         {
             MarkerAddedEventArgs eArg = (MarkerAddedEventArgs) e;
-            
-            if (radioButtonPointerCreateStation.Checked && addedDevice is null)
+
+            if (deviceAdded)
+            {
+                return;
+            }
+
+            if (radioButtonPointerCreateStation.Checked)
             {
                 // New marker is a station.
                 Station nodeTag = new Station(eArg.NewMarker);
@@ -45,28 +60,7 @@ namespace LPSView
             }
             else
             {
-                // Debug
-                if (addedDevice is null)
-                {
-                    log.Debug("Debugging device added");
-                    formsMap1.RemoveMarker(eArg.NewMarker);
-                    return;
-                    addedDevice = 10;
-                }
-
-                // New marker is a device.
-                Device nodeTag = new Device(eArg.NewMarker, addedDevice.Value);
-
-                string nodeKey = addedDevice.Value.ToString();
-                string nodeText = $"MAC {addedDevice}";
-
-                TreeNode newNode = deviceRootNode.Nodes.Add(nodeKey, nodeText);
-                newNode.Tag = nodeTag;
-
-                log.Debug($"Added device, MAC: {nodeTag.MacAddress}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
-
-                // Debug
-                addedDevice = null;
+                formsMap1.RemoveMarker(eArg.NewMarker);
             }
         }
 
@@ -152,23 +146,40 @@ namespace LPSView
 
             var calculatedData = WifiDataThingy.GetDevicePositions(deviceInformation);
 
-            foreach (var item in calculatedData)
+            deviceAdded = true;
+            foreach ((string, WifiFinderAlgorithm.WifiFinderAlgorithm.Point) item in calculatedData)
             {
-                addedDevice = item.Item1;
-                var newPoint = new GraphicsPoint(new Point((int)item.Item2.X, (int)item.Item2.Y), FormsMap.GraphicsPoint.PointRelation.AbsoluteMap, formsMap1);
+                string nodeKey = item.Item1;
+                var position = new GraphicsPoint(new Point((int)item.Item2.X, (int)item.Item2.Y), GraphicsPoint.PointRelation.AbsoluteMap, formsMap1);
 
-                int deviceNodeIndex = deviceRootNode.Nodes.IndexOfKey(item.Item1.ToString());
+                int deviceNodeIndex = deviceRootNode.Nodes.IndexOfKey(nodeKey);
                 if (deviceNodeIndex == -1)
                 {
-                    addedDevice = item.Item1;
-                    formsMap1.AddDefaultMarker(newPoint, false);
-                    addedDevice = null;
+                    MapMarker newMarker = new MapMarker(position, MapIcons.PinpointDevice, false);
+                    formsMap1.AddMarker(newMarker);
+
+                    // New marker is a device.
+                    Device nodeTag = new Device(newMarker, item.Item1);
+
+                    PhysicalAddress macAddress = PhysicalAddress.Parse(item.Item1);
+                    MacVendorInfo macInfo = addressMatcher.FindInfo(macAddress);
+                    
+                    string nodeText = $"({macInfo.Organization}) {item.Item1}";
+
+                    TreeNode newNode = deviceRootNode.Nodes.Add(nodeKey, nodeText);
+                    newNode.Tag = nodeTag;
+
+                    log.Debug($"Added device, MAC: {nodeTag.MacAddress}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
                 }
                 else
                 {
-                    ((Device)deviceRootNode.Nodes[deviceNodeIndex].Tag).MapMarker.Location = newPoint;
+                    Device device = (Device)deviceRootNode.Nodes[deviceNodeIndex].Tag;
+
+                    device.MapMarker.Location = position;
                 }
             }
+
+            deviceAdded = false;
 
             formsMap1.Refresh();
         }
@@ -290,12 +301,12 @@ namespace LPSView
 
         private class Device : MapEntity
         {
-            public Device(MapMarker mapMarker, long macAddress) : base(mapMarker)
+            public Device(MapMarker mapMarker, string macAddress) : base(mapMarker)
             {
                 MacAddress = macAddress;
             }
 
-            public long MacAddress { get; }
+            public string MacAddress { get; }
         }
 
         private class MapEntity
@@ -306,6 +317,17 @@ namespace LPSView
             {
                 MapMarker = mapMarker;
             }
+        }
+
+        private void buttonRemoveDevices_Click(object sender, EventArgs e)
+        {
+            foreach (var item in deviceRootNode.Nodes)
+            {
+                TreeNode treeNode = (TreeNode)item;
+                formsMap1.RemoveMarker(((Device)treeNode.Tag).MapMarker);
+            }
+
+            deviceRootNode.Nodes.Clear();
         }
     }
 }

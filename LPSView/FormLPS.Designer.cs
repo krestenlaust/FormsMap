@@ -47,16 +47,17 @@ namespace LPSView
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonRemoveDevices = new System.Windows.Forms.Button();
             this.buttonSaveStations = new System.Windows.Forms.Button();
             this.buttonRefreshData = new System.Windows.Forms.Button();
             this.buttonStopDataPull = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButtonPointerCreateStation = new System.Windows.Forms.RadioButton();
             this.radioButtonPointer = new System.Windows.Forms.RadioButton();
-            this.formsMap1 = new FormsMapController.FormsMap();
             this.timerPullData = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.formsMap1 = new FormsMapController.FormsMap();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -147,6 +148,7 @@ namespace LPSView
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.buttonRemoveDevices);
             this.groupBox1.Controls.Add(this.buttonSaveStations);
             this.groupBox1.Controls.Add(this.buttonRefreshData);
             this.groupBox1.Controls.Add(this.buttonStopDataPull);
@@ -159,6 +161,16 @@ namespace LPSView
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Værktøjer";
+            // 
+            // buttonRemoveDevices
+            // 
+            this.buttonRemoveDevices.Location = new System.Drawing.Point(9, 89);
+            this.buttonRemoveDevices.Name = "buttonRemoveDevices";
+            this.buttonRemoveDevices.Size = new System.Drawing.Size(96, 23);
+            this.buttonRemoveDevices.TabIndex = 5;
+            this.buttonRemoveDevices.Text = "Fjern alle";
+            this.buttonRemoveDevices.UseVisualStyleBackColor = true;
+            this.buttonRemoveDevices.Click += new System.EventHandler(this.buttonRemoveDevices_Click);
             // 
             // buttonSaveStations
             // 
@@ -225,17 +237,6 @@ namespace LPSView
             this.radioButtonPointer.Text = "Markør";
             this.radioButtonPointer.UseVisualStyleBackColor = true;
             // 
-            // formsMap1
-            // 
-            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.formsMap1.Location = new System.Drawing.Point(0, 0);
-            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
-            this.formsMap1.Name = "formsMap1";
-            this.formsMap1.Pan = new System.Drawing.Point(650, 550);
-            this.formsMap1.Size = new System.Drawing.Size(589, 450);
-            this.formsMap1.TabIndex = 0;
-            this.formsMap1.ZoomFactor = 1F;
-            // 
             // timerPullData
             // 
             this.timerPullData.Interval = 1000;
@@ -256,6 +257,19 @@ namespace LPSView
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 16);
+            // 
+            // formsMap1
+            // 
+            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.formsMap1.Location = new System.Drawing.Point(0, 0);
+            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
+            this.formsMap1.Name = "formsMap1";
+            this.formsMap1.Pan = new System.Drawing.Point(650, 550);
+            this.formsMap1.PixelsPerGridUnitRatio = 9.1617F;
+            this.formsMap1.ShowGridZoomThreshold = 1.5F;
+            this.formsMap1.Size = new System.Drawing.Size(589, 450);
+            this.formsMap1.TabIndex = 0;
+            this.formsMap1.ZoomFactor = 2F;
             // 
             // FormLPSView
             // 
@@ -302,6 +316,7 @@ namespace LPSView
         private System.Windows.Forms.Timer timerPullData;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.Button buttonRemoveDevices;
     }
 }
 

@@ -8,7 +8,7 @@ namespace LPSView
 {
     public static class QueryDatabase
     {
-        private static TcpClient client;
+        private static List<TcpClient> clients = new List<TcpClient>();
 
         /// <summary>
         /// 
@@ -18,30 +18,49 @@ namespace LPSView
         /// <exception cref="SocketException"></exception>
         public static void ConnectDatabase(string hostname, int port)
         {
-            client = new TcpClient(hostname, port);
+            TcpClient client = new TcpClient(hostname, port);
+            clients.Add(client);
         }
 
         public static string GetRecentData()
         {
-            if (client is null)
+            foreach (var client in clients)
             {
-                MessageBox.Show("Ikke forbundet til database");
-                return null;
+                if (client?.Connected != true)
+                {
+                    MessageBox.Show("Ikke forbundet til database");
+                    return null;
+                }
+
+                NetworkStream stream = client.GetStream();
+
+                stream.WriteByte(1);
             }
 
-            NetworkStream stream = client.GetStream();
+            StringBuilder sb = new StringBuilder();
 
-            stream.WriteByte(1);
+            foreach (var client in clients)
+            {
+                if (client?.Connected != true)
+                {
+                    MessageBox.Show("Ikke forbundet til database");
+                    return null;
+                }
 
-            byte[] dataSizeBytes = new byte[sizeof(uint)];
-            stream.Read(dataSizeBytes, 0, dataSizeBytes.Length);
+                NetworkStream stream = client.GetStream();
 
-            uint dataSize = BitConverter.ToUInt32(dataSizeBytes, 0);
+                byte[] dataSizeBytes = new byte[sizeof(uint)];
+                stream.Read(dataSizeBytes, 0, dataSizeBytes.Length);
 
-            byte[] incomingData = new byte[dataSize];
-            stream.Read(incomingData, 0, incomingData.Length);
+                uint dataSize = BitConverter.ToUInt32(dataSizeBytes, 0);
 
-            return Encoding.ASCII.GetString(incomingData);
+                byte[] incomingData = new byte[dataSize];
+                stream.Read(incomingData, 0, incomingData.Length);
+
+                sb.AppendLine(Encoding.ASCII.GetString(incomingData));
+            }
+
+            return sb.ToString();
         }
 
         public static Dictionary<long, Dictionary<byte, byte>> ParseDataString(string data)
@@ -53,7 +72,8 @@ namespace LPSView
             {
                 string[] singleMacDevice = item.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                long mac = long.Parse(singleMacDevice[0]);
+                // MAC is hexadecimal (without colons)
+                long mac = Convert.ToInt64(singleMacDevice[0], 16);
 
                 if (singleMacDevice.Length == 1)
                 {

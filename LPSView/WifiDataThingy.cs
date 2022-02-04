@@ -1,5 +1,7 @@
 ﻿using log4net;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using WifiFinderAlgorithm;
 using static WifiFinderAlgorithm.WifiFinderAlgorithm;
 
@@ -9,7 +11,7 @@ namespace LPSView
     {
         internal static ILog Log => LogManager.GetLogger(nameof(WifiDataThingy));
 
-        public static IEnumerable<(long, Point)> GetDevicePositions(Dictionary<long, Receiver[]> devices)
+        public static IEnumerable<(string, Point)> GetDevicePositions(Dictionary<long, Receiver[]> devices)
         {
             foreach (var item in devices)
             {
@@ -25,11 +27,11 @@ namespace LPSView
                 }
 
                 Point? intersection = FindDevice(item.Value);
-                Log.Info($"- Intersection: {intersection.Value}");
+                Log.Info($"- Intersection: {intersection}");
 
                 if (!(intersection is null))
                 {
-                    yield return (item.Key, intersection.Value);
+                    yield return (string.Join(":", BitConverter.GetBytes(item.Key).Reverse().Select(b => b.ToString("X2"))).Substring(6), intersection.Value);
                 }
             }
         }

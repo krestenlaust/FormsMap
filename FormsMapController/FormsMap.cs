@@ -22,11 +22,15 @@ namespace FormsMapController
         private Image mapImage;
         private MapMarker draggedMarker = null;
         private Size currentMapSize;
+        private bool gridShown = false;
+        private GraphicsPoint gridOrigin;
+        private bool previousGridShown;
 
         public FormsMap()
         {
             InitializeComponent();
 
+            gridOrigin = new GraphicsPoint(Point.Empty, GraphicsPoint.PointRelation.AbsolutePixel, this);
             pictureBoxMap.MouseWheel += OnMouseWheel;
         }
 
@@ -50,6 +54,9 @@ namespace FormsMapController
                 bool changed = zoomFactor != value;
 
                 zoomFactor = value;
+
+                gridShown = zoomFactor >= ShowGridZoomThreshold;
+                pictureBoxMap.Invalidate();
 
                 if (changed)
                 {
@@ -84,6 +91,10 @@ namespace FormsMapController
             }
         }
 
+        public float PixelsPerGridUnitRatio { get; set; } = 10;
+
+        public float ShowGridZoomThreshold { get; set; } = 1.5f;
+
         public void AddMarker(MapMarker marker)
         {
             mapMarkers.Add(marker);
@@ -97,7 +108,7 @@ namespace FormsMapController
 
         public MapMarker AddDefaultMarker(GraphicsPoint point, bool draggable)
         {
-            MapMarker newMarker = new MapMarker(point, Properties.Resources.pinpoint, draggable);
+            MapMarker newMarker = new MapMarker(point, Properties.Resources.Pinpoint_red, draggable);
             AddMarker(newMarker);
 
             return newMarker;
@@ -141,10 +152,37 @@ namespace FormsMapController
                 e.Graphics.DrawImage(MapImage, new Rectangle(invertedPan, zoom));
             }
 
+            if (gridShown)
+            {
+                float pixelCellSize = (int)(PixelsPerGridUnitRatio * ZoomFactor);
+
+                int gridXOffset = (int)(gridOrigin.AbsolutePixel.X % pixelCellSize);
+
+                // Draw vertical grid lines.
+                for (int x = 0; x < currentMapSize.Width / pixelCellSize; x++)
+                {
+                    Point p1 = new Point((int)((x * pixelCellSize) + gridXOffset), 0);
+                    Point p2 = new Point((int)((x * pixelCellSize) + gridXOffset), currentMapSize.Height);
+
+                    // TODO: fix!
+                    e.Graphics.DrawLine(Pens.Black, p1, p2);
+                }
+
+                int gridYOffset = (int)(gridOrigin.AbsolutePixel.Y % pixelCellSize);
+
+                // Draw horisontal lines.
+                for (int y = 0; y < currentMapSize.Height / pixelCellSize; y++)
+                {
+                    Point p1 = new Point(0, (int)((y * pixelCellSize) + gridYOffset));
+                    Point p2 = new Point(currentMapSize.Width, (int)((y * pixelCellSize) + gridYOffset));
+
+                    e.Graphics.DrawLine(Pens.Black, p1, p2);
+                }
+            }
+
             // Misc
             foreach (var marker in mapMarkers)
             {
-                Debug.WriteLine(marker.MarkerPixelRectangle.X);
                 e.Graphics.DrawImage(marker.Icon, marker.MarkerPixelRectangle);
             }
         }
@@ -172,17 +210,22 @@ namespace FormsMapController
             ZoomFactor = Math.Min(Math.Max(zoomDelta + ZoomFactor, ZoomMin), ZoomMax);
 
             // Recalculate pan
-            Point zoomPoint = new Point(e.Location.X + Pan.X, e.Location.Y + Pan.Y);
+            Point zoomPoint = location.AbsolutePixel;
             Point offset = new Point((int)(zoomPoint.X * zoomDelta), (int)(zoomPoint.Y * zoomDelta));
             Pan = new Point(Pan.X + offset.X, Pan.Y + offset.Y);
         }
 
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                GraphicsPoint location = new GraphicsPoint(e.Location, GraphicsPoint.PointRelation.RelativePixel, this);
+            GraphicsPoint location = new GraphicsPoint(e.Location, GraphicsPoint.PointRelation.RelativePixel, this);
 
+            if (e.Button == MouseButtons.Middle)
+            {
+                previousGridShown = gridShown;
+                gridShown = true;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
                 draggedMarker = GetMapMarker(location);
 
                 if (!(draggedMarker is null) && !draggedMarker.Draggable)
@@ -223,7 +266,7 @@ namespace FormsMapController
             {
                 if (draggedMarker is null)
                 {
-                    MapMarker newMapMarker = new MapMarker(location, Properties.Resources.pinpoint, true);
+                    MapMarker newMapMarker = new MapMarker(location, Properties.Resources.Pinpoint_red, true);
                     AddMarker(newMapMarker);
 
                     MarkerAdded?.Invoke(this, new MarkerAddedEventArgs(newMapMarker));
@@ -231,6 +274,10 @@ namespace FormsMapController
 
                 draggedMarker = null;
                 pictureBoxMap.Invalidate();
+            }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                gridShown = previousGridShown;
             }
 
             Cursor = Cursors.Default;
@@ -249,6 +296,13 @@ namespace FormsMapController
             }
 
             GraphicsPoint location = new GraphicsPoint(e.Location, GraphicsPoint.PointRelation.RelativePixel, this);
+
+            if (e.Button == MouseButtons.Middle)
+            {
+                gridOrigin = location;
+
+                pictureBoxMap.Invalidate();
+            }
 
             MapMarker hoveredMarker = GetMapMarker(location);
 
@@ -398,6 +452,13 @@ namespace FormsMapController
                     Location.RelativePixel.X - (pixelSize.Width / 2),
                     Location.RelativePixel.Y - pixelSize.Height,
                     pixelSize.Width, pixelSize.Height);
+        }
+
+        public static class MapIcons
+        {
+            public static Image PinpointRed => Properties.Resources.Pinpoint_red;
+
+            public static Image PinpointDevice => Properties.Resources.Pinpoint_device;
         }
     }
 }
