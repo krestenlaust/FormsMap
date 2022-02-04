@@ -30,18 +30,18 @@ namespace LPSView
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2});
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Lytter110Dør");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Lytter110Foran");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
-            treeNode4,
-            treeNode5,
-            treeNode6});
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
+            treeNode15,
+            treeNode16});
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Lytter110Dør");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Lytter110Foran");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
+            treeNode18,
+            treeNode19,
+            treeNode20});
             this.buttonConfigure = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -86,23 +86,23 @@ namespace LPSView
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "Node2";
-            treeNode1.Text = "MacBook Air Pro Mega";
-            treeNode2.Name = "Node3";
-            treeNode2.Text = "Lenovo-2jwk";
-            treeNode3.Name = "Node0";
-            treeNode3.Text = "Enheder";
-            treeNode4.Name = "Node4";
-            treeNode4.Text = "Lytter110Dør";
-            treeNode5.Name = "Node5";
-            treeNode5.Text = "Lytter110Bagved";
-            treeNode6.Name = "Node6";
-            treeNode6.Text = "Lytter110Foran";
-            treeNode7.Name = "Node1";
-            treeNode7.Text = "Stationer";
+            treeNode15.Name = "Node2";
+            treeNode15.Text = "MacBook Air Pro Mega";
+            treeNode16.Name = "Node3";
+            treeNode16.Text = "Lenovo-2jwk";
+            treeNode17.Name = "Node0";
+            treeNode17.Text = "Enheder";
+            treeNode18.Name = "Node4";
+            treeNode18.Text = "Lytter110Dør";
+            treeNode19.Name = "Node5";
+            treeNode19.Text = "Lytter110Bagved";
+            treeNode20.Name = "Node6";
+            treeNode20.Text = "Lytter110Foran";
+            treeNode21.Name = "Node1";
+            treeNode21.Text = "Stationer";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3,
-            treeNode7});
+            treeNode17,
+            treeNode21});
             this.treeView1.Size = new System.Drawing.Size(207, 247);
             this.treeView1.TabIndex = 2;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -112,7 +112,6 @@ namespace LPSView
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -264,7 +263,7 @@ namespace LPSView
             this.formsMap1.Location = new System.Drawing.Point(0, 0);
             this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
             this.formsMap1.Name = "formsMap1";
-            this.formsMap1.Pan = new System.Drawing.Point(650, 550);
+            this.formsMap1.Pan = new System.Drawing.Point(1000, 700);
             this.formsMap1.PixelsPerGridUnitRatio = 9.1617F;
             this.formsMap1.ShowGridZoomThreshold = 1.5F;
             this.formsMap1.Size = new System.Drawing.Size(589, 450);

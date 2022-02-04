@@ -8,7 +8,7 @@ namespace LPSView
 {
     public static class QueryDatabase
     {
-        private static List<TcpClient> clients = new List<TcpClient>();
+        private static readonly List<TcpClient> clients = new List<TcpClient>();
 
         /// <summary>
         /// 
@@ -18,25 +18,19 @@ namespace LPSView
         /// <exception cref="SocketException"></exception>
         public static void ConnectDatabase(string hostname, int port)
         {
-            TcpClient client = new TcpClient(hostname, port);
-            clients.Add(client);
+            try
+            {
+                TcpClient client = new TcpClient(hostname, port);
+                clients.Add(client);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Cannot connecct to database");
+            }
         }
 
         public static string GetRecentData()
         {
-            foreach (var client in clients)
-            {
-                if (client?.Connected != true)
-                {
-                    MessageBox.Show("Ikke forbundet til database");
-                    return null;
-                }
-
-                NetworkStream stream = client.GetStream();
-
-                stream.WriteByte(1);
-            }
-
             StringBuilder sb = new StringBuilder();
 
             foreach (var client in clients)
@@ -44,20 +38,23 @@ namespace LPSView
                 if (client?.Connected != true)
                 {
                     MessageBox.Show("Ikke forbundet til database");
-                    return null;
+                    return string.Empty;
                 }
 
                 NetworkStream stream = client.GetStream();
 
-                byte[] dataSizeBytes = new byte[sizeof(uint)];
-                stream.Read(dataSizeBytes, 0, dataSizeBytes.Length);
+                while (stream.DataAvailable)
+                {
+                    byte[] dataSizeBytes = new byte[sizeof(uint)];
+                    stream.Read(dataSizeBytes, 0, dataSizeBytes.Length);
 
-                uint dataSize = BitConverter.ToUInt32(dataSizeBytes, 0);
+                    uint dataSize = BitConverter.ToUInt32(dataSizeBytes, 0);
 
-                byte[] incomingData = new byte[dataSize];
-                stream.Read(incomingData, 0, incomingData.Length);
+                    byte[] incomingData = new byte[dataSize];
+                    stream.Read(incomingData, 0, incomingData.Length);
 
-                sb.AppendLine(Encoding.ASCII.GetString(incomingData));
+                    sb.Append(Encoding.ASCII.GetString(incomingData));
+                }
             }
 
             return sb.ToString();
@@ -65,22 +62,38 @@ namespace LPSView
 
         public static Dictionary<long, Dictionary<byte, byte>> ParseDataString(string data)
         {
-            Dictionary<long, Dictionary<byte, byte>> DeviceData = new Dictionary<long, Dictionary<byte, byte>>();
+            Dictionary<long, Dictionary<byte, byte>> deviceData = new Dictionary<long, Dictionary<byte, byte>>();
 
             // Example: MAC;enhed.rssi,enhed.rssi,enhed.rssi\n
             foreach (var item in data.Replace("\r", "").Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                string[] singleMacDevice = item.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] singleMacDevice;
+                long mac;
 
-                // MAC is hexadecimal (without colons)
-                long mac = Convert.ToInt64(singleMacDevice[0], 16);
+                try
+                {
+                    singleMacDevice = item.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
+                    // MAC is hexadecimal (without colons)
+                    mac = Convert.ToInt64(singleMacDevice[0]);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Weird glitch: " + ex);
+                    continue;
+                }
+                
                 if (singleMacDevice.Length == 1)
                 {
+                    // Empty
                     continue;
                 }
 
-                DeviceData[mac] = new Dictionary<byte, byte>();
+                if (!deviceData.TryGetValue(mac, out Dictionary<byte, byte> deviceDataStations))
+                {
+                    deviceDataStations = new Dictionary<byte, byte>();
+                    deviceData[mac] = deviceDataStations;
+                }
 
                 foreach (string singleStation in singleMacDevice[1].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -89,11 +102,11 @@ namespace LPSView
                     byte stationID = byte.Parse(collection[0]);
                     byte rssi = byte.Parse(collection[1]);
 
-                    DeviceData[mac][stationID] = rssi;
+                    deviceDataStations[stationID] = rssi;
                 }
             }
 
-            return DeviceData;
+            return deviceData;
         }
     }
 }

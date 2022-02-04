@@ -27,14 +27,6 @@ namespace LPSView
             log = LogManager.GetLogger(GetType());
 
             formsMap1.MarkerAdded += FormsMap1_MarkerAdded;
-
-            var vendorInfoProvider = new MacVendorBinaryReader();
-            using (var resourceStream = ManufBinResource.GetStream().Result)
-            {
-                vendorInfoProvider.Init(resourceStream).Wait();
-            }
-
-            addressMatcher = new AddressMatcher(vendorInfoProvider);
         }
 
         private void FormsMap1_MarkerAdded(object sender, EventArgs e)
@@ -50,6 +42,7 @@ namespace LPSView
             {
                 // New marker is a station.
                 Station nodeTag = new Station(eArg.NewMarker);
+                nodeTag.ID = (byte)(stationRootNode.Nodes.Count + 1);
 
                 string nodeText = $"Station {stationRootNode.Nodes.Count + 1}";
 
@@ -64,7 +57,7 @@ namespace LPSView
             }
         }
 
-        private void FormLPSView_Load(object sender, EventArgs e)
+        private async void FormLPSView_Load(object sender, EventArgs e)
         {
             deviceRootNode = treeView1.Nodes[0];
             stationRootNode = treeView1.Nodes[1];
@@ -73,6 +66,18 @@ namespace LPSView
 
             deviceRootNode.Nodes.Clear();
             stationRootNode.Nodes.Clear();
+
+            toolStripStatusLabel.Text = "Indlæser Mac-addresse database...";
+            var vendorInfoProvider = new MacVendorBinaryReader();
+            using (var resourceStream = await ManufBinResource.GetStream())
+            {
+                toolStripStatusLabel.Text = "Behandler stream...";
+                await vendorInfoProvider.Init(resourceStream);
+            }
+
+            toolStripStatusLabel.Text = "Database indlæst.";
+            addressMatcher = new AddressMatcher(vendorInfoProvider);
+            toolStripStatusLabel.Text = "Klar til at finde Mac-adresser";
         }
 
         private void buttonConfigure_Click(object sender, EventArgs e)
@@ -113,17 +118,27 @@ namespace LPSView
         {
             string result = QueryDatabase.GetRecentData();
 
-            if (result is null)
+            if (result == string.Empty)
             {
                 return;
             }
 
             // Create dictionary of station coordinate by ID.
-            Dictionary<byte, Coordinate> stationLookup = GetStations().ToDictionary(
-                key => key.ID,
-                element =>
-                    new Coordinate(element.MapMarker.Location.AbsoluteMap.X, element.MapMarker.Location.AbsoluteMap.Y));
-
+            Dictionary<byte, Coordinate> stationLookup;
+            try
+            {
+                stationLookup = GetStations().ToDictionary(
+                    key => key.ID,
+                    element =>
+                        new Coordinate(element.MapMarker.Location.AbsoluteMap.X, element.MapMarker.Location.AbsoluteMap.Y));
+            }
+            catch (Exception ex)
+            {
+                log.Warn(ex);
+                toolStripStatusLabel.Text = "Nogle stationer har samme ID";
+                return;
+            }
+            
             // Get latest device information
             Dictionary<long, Dictionary<byte, byte>> deviceData = QueryDatabase.ParseDataString(result);
 
@@ -147,10 +162,12 @@ namespace LPSView
             var calculatedData = WifiDataThingy.GetDevicePositions(deviceInformation);
 
             deviceAdded = true;
+            bool deviceUpdated = false;
             foreach ((string, WifiFinderAlgorithm.WifiFinderAlgorithm.Point) item in calculatedData)
             {
                 string nodeKey = item.Item1;
                 var position = new GraphicsPoint(new Point((int)item.Item2.X, (int)item.Item2.Y), GraphicsPoint.PointRelation.AbsoluteMap, formsMap1);
+                deviceUpdated = true;
 
                 int deviceNodeIndex = deviceRootNode.Nodes.IndexOfKey(nodeKey);
                 if (deviceNodeIndex == -1)
@@ -159,12 +176,11 @@ namespace LPSView
                     formsMap1.AddMarker(newMarker);
 
                     // New marker is a device.
-                    Device nodeTag = new Device(newMarker, item.Item1);
+                    PhysicalAddress macAddress = PhysicalAddress.Parse(item.Item1.Replace(':', '-'));
+                    Device nodeTag = new Device(newMarker, macAddress);
 
-                    PhysicalAddress macAddress = PhysicalAddress.Parse(item.Item1);
                     MacVendorInfo macInfo = addressMatcher.FindInfo(macAddress);
-                    
-                    string nodeText = $"({macInfo.Organization}) {item.Item1}";
+                    string nodeText = macInfo is null ? item.Item1 : $"({macInfo.Organization}) {item.Item1}";
 
                     TreeNode newNode = deviceRootNode.Nodes.Add(nodeKey, nodeText);
                     newNode.Tag = nodeTag;
@@ -181,7 +197,10 @@ namespace LPSView
 
             deviceAdded = false;
 
-            formsMap1.Refresh();
+            if (deviceUpdated)
+            {
+                formsMap1.Refresh();
+            }
         }
 
         private void buttonSaveStations_Click(object sender, EventArgs e)
@@ -301,12 +320,12 @@ namespace LPSView
 
         private class Device : MapEntity
         {
-            public Device(MapMarker mapMarker, string macAddress) : base(mapMarker)
+            public Device(MapMarker mapMarker, PhysicalAddress macAddress) : base(mapMarker)
             {
                 MacAddress = macAddress;
             }
 
-            public string MacAddress { get; }
+            public PhysicalAddress MacAddress { get; }
         }
 
         private class MapEntity
