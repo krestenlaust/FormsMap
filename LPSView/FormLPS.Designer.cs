@@ -30,18 +30,18 @@ namespace LPSView
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
-            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
-            treeNode15,
-            treeNode16});
-            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Lytter110Dør");
-            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
-            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Lytter110Foran");
-            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
-            treeNode18,
-            treeNode19,
-            treeNode20});
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("MacBook Air Pro Mega");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Lenovo-2jwk");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Enheder", new System.Windows.Forms.TreeNode[] {
+            treeNode8,
+            treeNode9});
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Lytter110Dør");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Lytter110Bagved");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Lytter110Foran");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Stationer", new System.Windows.Forms.TreeNode[] {
+            treeNode11,
+            treeNode12,
+            treeNode13});
             this.buttonConfigure = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -54,10 +54,11 @@ namespace LPSView
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButtonPointerCreateStation = new System.Windows.Forms.RadioButton();
             this.radioButtonPointer = new System.Windows.Forms.RadioButton();
+            this.formsMap1 = new FormsMapController.FormsMap();
             this.timerPullData = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.formsMap1 = new FormsMapController.FormsMap();
+            this.buttonRemoveStations = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -86,23 +87,23 @@ namespace LPSView
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode15.Name = "Node2";
-            treeNode15.Text = "MacBook Air Pro Mega";
-            treeNode16.Name = "Node3";
-            treeNode16.Text = "Lenovo-2jwk";
-            treeNode17.Name = "Node0";
-            treeNode17.Text = "Enheder";
-            treeNode18.Name = "Node4";
-            treeNode18.Text = "Lytter110Dør";
-            treeNode19.Name = "Node5";
-            treeNode19.Text = "Lytter110Bagved";
-            treeNode20.Name = "Node6";
-            treeNode20.Text = "Lytter110Foran";
-            treeNode21.Name = "Node1";
-            treeNode21.Text = "Stationer";
+            treeNode8.Name = "Node2";
+            treeNode8.Text = "MacBook Air Pro Mega";
+            treeNode9.Name = "Node3";
+            treeNode9.Text = "Lenovo-2jwk";
+            treeNode10.Name = "Node0";
+            treeNode10.Text = "Enheder";
+            treeNode11.Name = "Node4";
+            treeNode11.Text = "Lytter110Dør";
+            treeNode12.Name = "Node5";
+            treeNode12.Text = "Lytter110Bagved";
+            treeNode13.Name = "Node6";
+            treeNode13.Text = "Lytter110Foran";
+            treeNode14.Name = "Node1";
+            treeNode14.Text = "Stationer";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode17,
-            treeNode21});
+            treeNode10,
+            treeNode14});
             this.treeView1.Size = new System.Drawing.Size(207, 247);
             this.treeView1.TabIndex = 2;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -147,6 +148,7 @@ namespace LPSView
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.buttonRemoveStations);
             this.groupBox1.Controls.Add(this.buttonRemoveDevices);
             this.groupBox1.Controls.Add(this.buttonSaveStations);
             this.groupBox1.Controls.Add(this.buttonRefreshData);
@@ -175,9 +177,9 @@ namespace LPSView
             // 
             this.buttonSaveStations.Location = new System.Drawing.Point(112, 60);
             this.buttonSaveStations.Name = "buttonSaveStations";
-            this.buttonSaveStations.Size = new System.Drawing.Size(89, 52);
+            this.buttonSaveStations.Size = new System.Drawing.Size(89, 32);
             this.buttonSaveStations.TabIndex = 4;
-            this.buttonSaveStations.Text = "Station data";
+            this.buttonSaveStations.Text = "Gem stationer";
             this.buttonSaveStations.UseVisualStyleBackColor = true;
             this.buttonSaveStations.Click += new System.EventHandler(this.buttonSaveStations_Click);
             // 
@@ -236,6 +238,19 @@ namespace LPSView
             this.radioButtonPointer.Text = "Markør";
             this.radioButtonPointer.UseVisualStyleBackColor = true;
             // 
+            // formsMap1
+            // 
+            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.formsMap1.Location = new System.Drawing.Point(0, 0);
+            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
+            this.formsMap1.Name = "formsMap1";
+            this.formsMap1.Pan = new System.Drawing.Point(1000, 700);
+            this.formsMap1.PixelsPerGridUnitRatio = 9.1617F;
+            this.formsMap1.ShowGridZoomThreshold = 1.5F;
+            this.formsMap1.Size = new System.Drawing.Size(589, 450);
+            this.formsMap1.TabIndex = 0;
+            this.formsMap1.ZoomFactor = 2F;
+            // 
             // timerPullData
             // 
             this.timerPullData.Interval = 1000;
@@ -257,18 +272,15 @@ namespace LPSView
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 16);
             // 
-            // formsMap1
+            // buttonRemoveStations
             // 
-            this.formsMap1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.formsMap1.Location = new System.Drawing.Point(0, 0);
-            this.formsMap1.MapImage = global::LPSView.Properties.Resources._1D81B833202C4B2ABA6EF0CD161CB763_1_1_1;
-            this.formsMap1.Name = "formsMap1";
-            this.formsMap1.Pan = new System.Drawing.Point(1000, 700);
-            this.formsMap1.PixelsPerGridUnitRatio = 9.1617F;
-            this.formsMap1.ShowGridZoomThreshold = 1.5F;
-            this.formsMap1.Size = new System.Drawing.Size(589, 450);
-            this.formsMap1.TabIndex = 0;
-            this.formsMap1.ZoomFactor = 2F;
+            this.buttonRemoveStations.Location = new System.Drawing.Point(109, 89);
+            this.buttonRemoveStations.Name = "buttonRemoveStations";
+            this.buttonRemoveStations.Size = new System.Drawing.Size(96, 23);
+            this.buttonRemoveStations.TabIndex = 6;
+            this.buttonRemoveStations.Text = "Slet";
+            this.buttonRemoveStations.UseVisualStyleBackColor = true;
+            this.buttonRemoveStations.Click += new System.EventHandler(this.buttonRemoveStations_Click);
             // 
             // FormLPSView
             // 
@@ -316,6 +328,7 @@ namespace LPSView
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.Button buttonRemoveDevices;
+        private System.Windows.Forms.Button buttonRemoveStations;
     }
 }
 

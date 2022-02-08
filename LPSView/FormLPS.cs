@@ -29,6 +29,25 @@ namespace LPSView
             formsMap1.MarkerAdded += FormsMap1_MarkerAdded;
         }
 
+        private Station HandleNewStationMarker(MapMarker marker, string name, byte stationID)
+        {
+            string nodeText = name;
+
+            // New marker is a station.
+            Station nodeTag = new Station(marker)
+            {
+                ID = stationID,
+                StationName = nodeText
+            };
+
+            TreeNode newNode = stationRootNode.Nodes.Add(nodeText);
+            newNode.Tag = nodeTag;
+
+            log.Debug($"Added station, ID: {nodeTag.ID}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
+
+            return nodeTag;
+        }
+
         private void FormsMap1_MarkerAdded(object sender, EventArgs e)
         {
             MarkerAddedEventArgs eArg = (MarkerAddedEventArgs) e;
@@ -40,16 +59,14 @@ namespace LPSView
 
             if (radioButtonPointerCreateStation.Checked)
             {
-                // New marker is a station.
-                Station nodeTag = new Station(eArg.NewMarker);
-                nodeTag.ID = (byte)(stationRootNode.Nodes.Count + 1);
+                Station newStation = HandleNewStationMarker(eArg.NewMarker, $"Station {stationRootNode.Nodes.Count + 1}", (byte)(stationRootNode.Nodes.Count + 1));
 
-                string nodeText = $"Station {stationRootNode.Nodes.Count + 1}";
-
-                TreeNode newNode = stationRootNode.Nodes.Add(nodeText);
-                newNode.Tag = nodeTag;
-
-                log.Debug($"Added station, ID: {nodeTag.ID}, Location: {nodeTag.MapMarker.Location.AbsoluteMap}, Nodetext: {nodeText}");
+                // Store new station.
+                SaveStations.StoreStation(new SaveStations.StoredStation(
+                    newStation.MapMarker.Location.AbsoluteMap.X,
+                    newStation.MapMarker.Location.AbsoluteMap.Y,
+                    newStation.ID,
+                    newStation.StationName));
             }
             else
             {
@@ -59,6 +76,7 @@ namespace LPSView
 
         private async void FormLPSView_Load(object sender, EventArgs e)
         {
+            // Prepare tree root nodes
             deviceRootNode = treeView1.Nodes[0];
             stationRootNode = treeView1.Nodes[1];
 
@@ -67,6 +85,20 @@ namespace LPSView
             deviceRootNode.Nodes.Clear();
             stationRootNode.Nodes.Clear();
 
+            // Load stored stations
+            deviceAdded = true;
+            foreach (var item in SaveStations.GetStoredStations())
+            {
+                MapMarker marker = new MapMarker(
+                    new GraphicsPoint(new Point(item.X, item.Y), GraphicsPoint.PointRelation.AbsoluteMap, formsMap1),
+                    MapIcons.PinpointRed, true);
+                formsMap1.AddMarker(marker);
+
+                HandleNewStationMarker(marker, item.StationName, (byte)(stationRootNode.Nodes.Count + 1));
+            }
+            deviceAdded = false;
+
+            // Prepare mac address database.
             toolStripStatusLabel.Text = "Indlæser Mac-addresse database...";
             var vendorInfoProvider = new MacVendorBinaryReader();
             using (var resourceStream = await ManufBinResource.GetStream())
@@ -205,6 +237,20 @@ namespace LPSView
 
         private void buttonSaveStations_Click(object sender, EventArgs e)
         {
+            foreach (object item in stationRootNode.Nodes)
+            {
+                TreeNode node = (TreeNode)item;
+                Station station = (Station)node.Tag;
+
+                // TODO: Stores everything at O(n^2) or something
+                SaveStations.StoreStation(new SaveStations.StoredStation(
+                    station.MapMarker.Location.AbsoluteMap.X,
+                    station.MapMarker.Location.AbsoluteMap.Y,
+                    station.ID,
+                    station.StationName));
+            }
+
+            /*
             StringBuilder sb = new StringBuilder();
             foreach (var item in GetStations())
             {
@@ -256,7 +302,7 @@ namespace LPSView
             }
             catch (FormatException)
             {
-            }
+            }*/
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -316,6 +362,8 @@ namespace LPSView
             }
 
             public byte ID { get; set; }
+
+            public string StationName { get; set; }
         }
 
         private class Device : MapEntity
@@ -347,6 +395,11 @@ namespace LPSView
             }
 
             deviceRootNode.Nodes.Clear();
+        }
+
+        private void buttonRemoveStations_Click(object sender, EventArgs e)
+        {
+            SaveStations.ClearStoredStations();
         }
     }
 }

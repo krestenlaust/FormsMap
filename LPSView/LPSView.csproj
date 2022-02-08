@@ -78,6 +78,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryDatabase.cs" />
+    <Compile Include="SaveStations.cs" />
     <Compile Include="StationConfigPrompt.cs">
       <SubType>Form</SubType>
     </Compile>
