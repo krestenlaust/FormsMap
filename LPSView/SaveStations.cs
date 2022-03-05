@@ -49,6 +49,7 @@ namespace LPSView
         {
             var stationStrings = Properties.Settings.Default.Stations;
             stationStrings.Clear();
+            loadedStations = stations;
 
             foreach (var item in stations)
             {

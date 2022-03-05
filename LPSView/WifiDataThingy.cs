@@ -20,10 +20,10 @@ namespace LPSView
                     continue;
                 }
 
-                Log.Info("Device position calculations: ");
+                Log.Info($"Device position calculations {item.Key}: ");
                 foreach (var receiver in item.Value)
                 {
-                    Log.Info($"- Receiver, Loc: {receiver.coordinate}, Radius: {receiver.signalStrength}");
+                    Log.Info($"- Receiver, Loc: ({receiver.coordinate.x}, {receiver.coordinate.y}), Radius: {receiver.signalStrength}");
                 }
 
                 Point? intersection = FindDevice(item.Value);
